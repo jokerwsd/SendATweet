@@ -1,0 +1,148 @@
+/*
+  SendATweet
+
+  Demonstrates sending a tweet via a Twitter account using the Temboo Arduino Yun SDK.
+
+  This example code is in the public domain.
+*/
+
+#include <Bridge.h>
+#include <Temboo.h>
+#include <LiquidCrystal.h>
+//#include "TembooAccount.h" // contains Temboo account information
+//#include "DHT.h"
+
+// DHT sensor info
+#define DHTPIN 6 // what digital pin we're connected to
+#define DHTTYPE DHT22 // what type of sensor you're using!
+DHT dht(DHTPIN, DHTTYPE);
+
+// initialize the library with the numbers of the interface pins
+LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
+
+// contains Temboo account information
+
+/*** SUBSTITUTE YOUR VALUES BELOW: ***/
+
+// Note that for additional security and reusability, you could
+// use #define statements to specify these values in a .h file.
+const String TWITTER_ACCESS_TOKEN = "742945992291569664-rHPJJDaiJdodYNd4KolmCfjHfXLsbQH";
+const String TWITTER_ACCESS_TOKEN_SECRET = "45sSa9rWzMg437HAXYs6pOxnSQXOBfh8bGWLbfjUUvH7N";
+const String TWITTER_API_KEY = "dwX5Dqxd0jCffGrnLkQYGsOJc";
+const String TWITTER_API_SECRET = "UJiWt6y5cGq1qVTVzWaZlgXk97hWNLaK2ub9pRZmpINqbM4fIw";
+
+int numRuns = 1;   // execution count, so this sketch doesn't run forever
+int maxRuns = 1;  // the max number of times the Twitter Update Choreo should run
+
+void setup() {
+  // set up the LCD's number of columns and rows:
+  lcd.begin(16, 2);
+  // initialize the serial communications:
+  Serial.begin(9600);
+  Serial.println("DHTxx test!");
+  
+  dht.begin();
+  /*
+  // for debugging, wait until a serial console is connected
+  delay(4000);
+  while (!Serial);
+
+  Bridge.begin();*/
+}
+
+void loop()
+{
+  
+  // Wait a few seconds between measurements
+  delay(2000);
+  
+    // Reading temperature or humidity takes about 250 milliseconds!
+  // Sensor readings may also be up to 2 seconds 'old' (its a very slow sensor)
+  float h = dht.readHumidity();
+  // Read temperature as Celsius (the default)
+  float t = dht.readTemperature();
+  // Read temperature as Fahrenheit (isFahrenheit = true)
+  float f = dht.readTemperature(true);
+
+  // Check if any reads failed and exit early (to try again).
+  if (isnan(h) || isnan(t) || isnan(f)) {
+    Serial.println("Failed to read from DHT sensor!");
+    return;
+  }
+
+  // Compute heat index in Fahrenheit (the default)
+  float hif = dht.computeHeatIndex(f, h);
+  // Compute heat index in Celsius (isFahreheit = false)
+  float hic = dht.computeHeatIndex(t, h, false);
+
+  lcd.print("Humidity: ");
+  lcd.print(h);
+  
+  lcd.setCursor(0, 1);
+  
+  lcd.print("Temp: ");
+  lcd.print(t);
+  lcd.print(" *C ");
+
+
+ /* 
+  // only try to send the tweet if we haven't already sent it successfully
+  if (numRuns <= maxRuns) {
+
+    Serial.println("Running SendATweet - Run #" + String(numRuns++) + "...");
+
+    // define the text of the tweet we want to send
+    String tweetText("My Arduino Yun has been running for " + String(millis()) + " milliseconds.");
+    String currentTempandHumidity(The current 
+
+    TembooChoreo StatusesUpdateChoreo;
+
+    // invoke the Temboo client
+    // NOTE that the client must be reinvoked, and repopulated with
+    // appropriate arguments, each time its run() method is called.
+    StatusesUpdateChoreo.begin();
+
+    // set Temboo account credentials
+    StatusesUpdateChoreo.setAccountName(TEMBOO_ACCOUNT);
+    StatusesUpdateChoreo.setAppKeyName(TEMBOO_APP_KEY_NAME);
+    StatusesUpdateChoreo.setAppKey(TEMBOO_APP_KEY);
+
+    // identify the Temboo Library choreo to run (Twitter > Tweets > StatusesUpdate)
+    StatusesUpdateChoreo.setChoreo("/Library/Twitter/Tweets/StatusesUpdate");
+
+    // set the required choreo inputs
+    // see https://www.temboo.com/library/Library/Twitter/Tweets/StatusesUpdate/
+    // for complete details about the inputs for this Choreo
+
+    // add the Twitter account information
+    StatusesUpdateChoreo.addInput("AccessToken", TWITTER_ACCESS_TOKEN);
+    StatusesUpdateChoreo.addInput("AccessTokenSecret", TWITTER_ACCESS_TOKEN_SECRET);
+    StatusesUpdateChoreo.addInput("ConsumerKey", TWITTER_API_KEY);
+    StatusesUpdateChoreo.addInput("ConsumerSecret", TWITTER_API_SECRET);
+
+    // and the tweet we want to send
+    StatusesUpdateChoreo.addInput("StatusUpdate", tweetText);
+
+    // tell the Process to run and wait for the results. The
+    // return code (returnCode) will tell us whether the Temboo client
+    // was able to send our request to the Temboo servers
+    unsigned int returnCode = StatusesUpdateChoreo.run();
+
+    // a return code of zero (0) means everything worked
+    if (returnCode == 0) {
+      Serial.println("Success! Tweet sent!");
+    } else {
+      // a non-zero return code means there was an error
+      // read and print the error message
+      while (StatusesUpdateChoreo.available()) {
+        char c = StatusesUpdateChoreo.read();
+        Serial.print(c);
+      }
+    }
+    StatusesUpdateChoreo.close();
+
+    // do nothing for the next 90 seconds
+    Serial.println("Waiting...");
+    delay(90000);
+  }*/
+}
